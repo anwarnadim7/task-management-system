@@ -1,5 +1,6 @@
 # Task Management System
-task-management-system.jpg
+
+(images/task-management-system.jpg)
 ## Overview
 
 Task Management Tracker is a simple and efficient tool designed to help you organize and track your tasks effectively. Whether you're working on personal projects, collaborating with a team, or managing your daily to-do list, this application provides a user-friendly interface for managing tasks and staying organized.
