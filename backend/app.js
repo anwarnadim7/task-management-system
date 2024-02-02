@@ -1,5 +1,6 @@
 const express = require('express');
 const mongoose = require('mongoose');
+const { validationResult } = require('express-validator');
 const cors = require('cors');
 
 const app = express();
@@ -27,6 +28,8 @@ const taskSchema = new mongoose.Schema({
 
 const Task = mongoose.model('Task', taskSchema);
 
+
+
 app.post('/tasks', async (req, res) => {
   try {
     const { title, description, duedate, completed } = req.body;
@@ -39,29 +42,18 @@ app.post('/tasks', async (req, res) => {
   }
 });
 
-const { validationResult } = require('express-validator');
+
 
 app.get('/tasks', async (req, res) => {
   try {
-    const errors = validationResult(req);
-    if (!errors.isEmpty()) {
-      return res.status(400).json({ errors: errors.array() });
-    }
     const { page = 1, limit = 5, sortBy } = req.query;
     const parsedPage = Math.max(1, parseInt(page, 10) || 1);
     const parsedLimit = Math.max(1, parseInt(limit, 10) || 5);
 
-    const sortOptions = {};
-    if (sortBy) {
-      sortOptions[sortBy] = 1;
-    }
+    const sortOptions = sortBy ? { [sortBy]: 1 } : {};
 
     const totalTasks = await Task.countDocuments();
     const totalPages = Math.ceil(totalTasks / parsedLimit);
-
-    if (parsedPage > totalPages) {
-      return res.status(400).json({ error: 'Invalid page number' });
-    }
 
     const tasks = await Task.find()
       .sort(sortOptions)
@@ -82,7 +74,6 @@ app.get('/tasks', async (req, res) => {
     res.status(500).json({ error: 'Internal Server Error' });
   }
 });
-
 
 
 app.put('/tasks/:taskId', async (req, res) => {
@@ -106,7 +97,6 @@ app.put('/tasks/:taskId', async (req, res) => {
     res.status(500).json({ error: 'Internal Server Error' });
   }
 });
-
 
 app.delete('/tasks/:taskId', async (req, res) => {
   try {
